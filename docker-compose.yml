@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: veera_onboarding_backend
+    build: ./Backend
+    ports:
+      - "3040:3040"
+    depends_on:
+      - postgres
+    environment:
+      - PORT=3040
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - DB_NAME=employee_db
+    command: sh -c "sleep 10 && node server.js"
+    volumes:
+      - ./Backend/Uploads:/app/Uploads
+
+  frontend:
+    container_name: veera_onboarding_frontend
+    build: ./Frontend
+    ports:
+      - "8135:80"
+
+  hr:
+    container_name: veera_onboarding_hr
+    build: ./HR
+    ports:
+      - "8136:80"
+
+  staff:
+    container_name: veera_onboarding_staff
+    build: ./Staff
+    ports:
+      - "8137:80"
+
+  postgres:
+    container_name: veera_onboarding_postgres
+    image: postgres:13
+    ports:
+      - "6600:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: employee_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
+
